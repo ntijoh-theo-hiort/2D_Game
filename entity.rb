@@ -1,16 +1,13 @@
-class Collidable
-    attr_accessor :x, :y, :width, :height
+class Entity
+    attr_accessor :x, :y, :width, :height, :collides_with
 
-    def initialize(x, y, width, height)
+    def initialize(x, y, width, height, window, collides_with)
+        @window = window
+        @collides_with = collides_with
         @x = x
         @y = y
         @width = width
         @height = height
-    end
-
-    def colliding_at_all?(obj)
-        return @y + @height >= obj.y && @y <= obj.y + obj.height && # same y
-               @x + @width >= obj.x && @x < obj.x + obj.width  # x collision on right
     end
 end
 

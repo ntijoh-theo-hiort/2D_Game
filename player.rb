@@ -1,49 +1,55 @@
-#TODO:
+require_relative ("./entity.rb")
 
-#change audio
-#work on background music
-#
-
-class Player
-	def initialize(window)
-		@window = window
+class Player < Entity
+	def initialize(x,y,width,height,window,collides_with)
+		super	
 		@animation = [Gosu::Image.new("./images/frog1.png"), Gosu::Image.new("./images/frog2.png"), Gosu::Image.new("./images/frog3.png"), Gosu::Image.new("./images/frog4.png")]
 		@player = @animation[0]
 		@animation_index = 0
 		@flipped = 1
 
-		@player_x_vel = 0 
-		@player_y_vel = 0
-		@player_x = 0 
-		@player_y = @window.height - @player.width
+		@x_vel = 0 
+		@y_vel = 0
+		@x = 0 
+		@y = @window.height - @player.width
 
 		@player_speed = 6
 		@max_speed = 16
 		@friction = 2
 
-		@jump_height = 30
+		@jump_height = 22
 		@gravity = 2
+
+		@dead = false
+	end
+
+	attr_reader :dead
+
+	def collide_with(entity, direction)
+		if entity.class == Enemy
+			@dead = true
+		end
 	end
 
 	def jump
-		if @player_y == @window.height - @player.width
-			@player_y_vel -= @jump_height
+		if @y == @window.height - @player.width
+			@y_vel -= @jump_height
 		end
 	end
 
 	def move_left
-		@player_x_vel -= @player_speed
+		@x_vel -= @player_speed
 	end
 
 	def jump_sound
-		if @player_y == @window.height - @player.width
+		if @y == @window.height - @player.width
 			#jump_sound = Gosu::Song::new("./audio/#{rand(1..4)}.mp3")
 			#jump_sound.play
 		end
 	end
 
 	def move_right
-		@player_x_vel += @player_speed
+		@x_vel += @player_speed
 	end
 
 	def animate
@@ -63,38 +69,38 @@ class Player
 		move_right && animate && @flipped = 1.0 if Gosu.button_down? Gosu::KB_RIGHT
 		crash_lol if Gosu.button_down? Gosu::KB_C
 		
-		if @player_x_vel > 0
-			@player_x_vel -= @friction
-		elsif @player_x_vel < 0         #checks if player is going left or right
-			@player_x_vel += @friction  #and decelerates each frame, basically friction for the x-axis
+		if @x_vel > 0
+			@x_vel -= @friction
+		elsif @x_vel < 0         #checks if player is going left or right
+			@x_vel += @friction  #and decelerates each frame, basically friction for the x-axis
 		end 
 
-		if @player_x_vel > @max_speed
-			@player_x_vel = @max_speed     #sets a max speed in both directions
-		elsif @player_x_vel < @max_speed * -1
-			@player_x_vel = @max_speed * -1
+		if @x_vel > @max_speed
+			@x_vel = @max_speed     #sets a max speed in both directions
+		elsif @x_vel < @max_speed * -1
+			@x_vel = @max_speed * -1
 		end
 		
-		if @player_y < @window.height-@player.width
-			@player_y_vel += @gravity         #gravity, basically... if the player is in the air, pull them down
+		if !@on_platform
+			@y_vel += @gravity         #gravity, basically... if the player is in the air, pull them down
 		end
 
-        if @player_x_vel == 0
+        if @x_vel == 0
             @player = @animation[0]
         end
 
-		@player_x += @player_x_vel
-		@player_y += @player_y_vel
+		@x += @x_vel
+		@y += @y_vel
 
-		if @player_x >= @window.width - @player.width    
-			@player_x = @window.width - @player.width
-		elsif @player_x <= 0      #keeps player within the x-axis boundaries
-			@player_x = 0
+		if @x >= @window.width - @player.width    
+			@x = @window.width - @player.width
+		elsif @x <= 0      #keeps player within the x-axis boundaries
+			@x = 0
 		end
 
-		if @player_y >= @window.height-@player.width && @player_y_vel > 0 #checks if you're on the ground and speeding downwards
-            @player_y_vel = 0
-			@player_y = @window.height-@player.width
+		if @y >= @window.height-@player.width && @y_vel > 0 #checks if you're on the ground and speeding downwards
+            @y_vel = 0
+			@y = @window.height-@player.width
 		end
 
 	end
@@ -103,6 +109,6 @@ class Player
 	# if b then x else y
 	
 	def draw
-		@player.draw(@flipped < 0 ? @player_x + @player.width : @player_x, @player_y, 0, @flipped, 1.0)
+		@player.draw(@flipped < 0 ? @x + @player.width : @x, @y, 0, @flipped, 1.0)
 	end
 end

@@ -1,29 +1,38 @@
-class Enemy
-    def initialize(window, difficulty)
-        @window = window
+require_relative("./entity.rb")
+
+class Enemy < Entity
+    def initialize(x, y, width, height, window, collides_with)
+        super
         @enemy = Gosu::Image.new("./images/enemy.png")
-        @enemy_x_vel = difficulty
-        @enemy_x = (window.width / 2) - (@enemy.width / 2)
-        @enemy_y = 100
+        @x_vel = 3
         @flipped = 1
     end
 
+    def collide_with(entity, direction)
+		if entity.class == Platform
+            @falling = false
+        else
+            @falling = true
+        end
+		# end
+	end
+
     def update
-        if @enemy_x >= @window.width - @enemy.width    
-            @enemy_x = @window.width - @enemy.width
-            @enemy_x_vel *= -1
+        if @x >= @window.width - @enemy.width    
+            @x = @window.width - @enemy.width
+            @x_vel *= -1
             @flipped *= -1
-        elsif @enemy_x <= 0      #bounces enemy back the other way when it hits the x-axis boundaries
-            @enemy_x = 0
-            @enemy_x_vel *= -1
+        elsif @x <= 0      #bounces enemy back the other way when it hits the x-axis boundaries
+            @x = 0
+            @x_vel *= -1
             @flipped *= -1
         end
         
-        @enemy_x += @enemy_x_vel
+        @x += @x_vel
     end
 
     def draw
-        @enemy.draw(@flipped < 0 ? @enemy_x + @enemy.width : @enemy_x, @enemy_y, 0, @flipped, 1.0)
+        @enemy.draw(@flipped < 0 ? @x + @enemy.width : @x, @y, 0, @flipped, 1.0)
     end
 end
 

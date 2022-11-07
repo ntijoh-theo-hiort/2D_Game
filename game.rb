@@ -1,30 +1,44 @@
 require "gosu"
+require_relative("./collision_handler.rb")
 require_relative("./player.rb")
 require_relative("./enemy.rb")
+require_relative("./platform.rb")
 
 class TheosPlatformer < Gosu::Window
     def initialize
-        difficulty = 3
         super(800,600)
         self.caption = "Theos Awesome Platformer"
-        @player = Player.new(self)
-        @enemy = Enemy.new(self, difficulty)
+        @collision_handler = CollisionHandler.new
+        @player = Player.new(50, 50, 20, 20, self, [Enemy])
+        @collision_handler.entities << @player
+        @enemy = Enemy.new(390, 550, 20, 20, self, [])
+        @collision_handler.entities << @enemy
+        #@platform = Platform.new
     end
-
-    # def death
-    #     if
-    #     end
-    # end
 
     def update
         @player.update
         @enemy.update
+        @collision_handler.check_collisions
     end
 
-    def draw
-        Gosu.draw_rect(0, 0, self.width, self.height, Gosu::Color.argb(0xff_ffffff), z = 0, mode = :default)
-        @player.draw            #above line is background ^^^
-        @enemy.draw
+    def draw 
+        if @player.dead == false
+            Gosu.draw_rect(0, 0, self.width, self.height, Gosu::Color.argb(0xff_ffffff), z = 0, mode = :default)
+            @player.draw            #above line is background ^^^
+            @enemy.draw
+            Gosu.draw_rect(0, 0, 300, 75, Gosu::Color.argb(0xff_000000), z = 0, mode = :default)
+            Gosu.draw_rect(500, 0, 300, 75, Gosu::Color.argb(0xff_000000), z = 0, mode = :default)
+            Gosu.draw_rect(200, 150, 400, 50, Gosu::Color.argb(0xff_000000), z = 0, mode = :default)
+            Gosu.draw_rect(0, 275, 250, 50, Gosu::Color.argb(0xff_000000), z = 0, mode = :default)
+            Gosu.draw_rect(550, 275, 250, 50, Gosu::Color.argb(0xff_000000), z = 0, mode = :default)
+            Gosu.draw_rect(200, 400, 400, 50, Gosu::Color.argb(0xff_000000), z = 0, mode = :default)
+            Gosu.draw_rect(0, 525, 300, 75, Gosu::Color.argb(0xff_000000), z = 0, mode = :default)
+            Gosu.draw_rect(500, 525, 300, 75, Gosu::Color.argb(0xff_000000), z = 0, mode = :default)
+        else
+            Gosu::Font.new(20).draw_text("you have died and so your reign of terror ends. \ntake this time to reconsile and ponder the suffering and dismay you have caused the\nfriends and families of your victims which you so blindly call enemies\nburn in hell, tyrant", 0, 0, 0, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
+            Gosu::Image.new("./images/frog1.png").draw(300, 580)
+        end
     end
 end
 
