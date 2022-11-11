@@ -1,11 +1,12 @@
 class Entity
-    attr_accessor :x, :y, :width, :height, :collides_with
+    attr_reader :x1, :x2, :y1, :y2, :width, :height
 
-    def initialize(x, y, width, height, window, collides_with)
+    def initialize(x, y, width, height, window)
         @window = window
-        @collides_with = collides_with
-        @x = x
-        @y = y
+        @x1 = x
+        @x2 = x + width
+        @y1 = y
+        @y2 = y + height
         @width = width
         @height = height
     end

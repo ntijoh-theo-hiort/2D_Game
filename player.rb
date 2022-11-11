@@ -1,7 +1,8 @@
 require_relative ("./entity.rb")
+require_relative ("./collision_handler.rb")
 
 class Player < Entity
-	def initialize(x,y,width,height,window,collides_with)
+	def initialize(x,y,width,height,window)
 		super	
 		@animation = [Gosu::Image.new("./images/frog1.png"), Gosu::Image.new("./images/frog2.png"), Gosu::Image.new("./images/frog3.png"), Gosu::Image.new("./images/frog4.png")]
 		@player = @animation[0]
@@ -10,8 +11,6 @@ class Player < Entity
 
 		@x_vel = 0 
 		@y_vel = 0
-		@x = 0 
-		@y = @window.height - @player.width
 
 		@player_speed = 6
 		@max_speed = 16
@@ -29,10 +28,12 @@ class Player < Entity
 		if entity.class == Enemy
 			@dead = true
 		end
+
+
 	end
 
 	def jump
-		if @y == @window.height - @player.width
+		if @y1 == @window.height - @player.width
 			@y_vel -= @jump_height
 		end
 	end
@@ -42,7 +43,7 @@ class Player < Entity
 	end
 
 	def jump_sound
-		if @y == @window.height - @player.width
+		if @y1 == @window.height - @player.width
 			#jump_sound = Gosu::Song::new("./audio/#{rand(1..4)}.mp3")
 			#jump_sound.play
 		end
@@ -67,7 +68,6 @@ class Player < Entity
 		jump if Gosu.button_down? Gosu::KB_UP
 		move_left && animate && @flipped = -1.0 if Gosu.button_down? Gosu::KB_LEFT
 		move_right && animate && @flipped = 1.0 if Gosu.button_down? Gosu::KB_RIGHT
-		crash_lol if Gosu.button_down? Gosu::KB_C
 		
 		if @x_vel > 0
 			@x_vel -= @friction
@@ -89,26 +89,26 @@ class Player < Entity
             @player = @animation[0]
         end
 
-		@x += @x_vel
-		@y += @y_vel
+		@x1 += @x_vel
+		@y1 += @y_vel
 
-		if @x >= @window.width - @player.width    
-			@x = @window.width - @player.width
-		elsif @x <= 0      #keeps player within the x-axis boundaries
-			@x = 0
+		if @x1 >= @window.width - @player.width    
+			@x1 = @window.width - @player.width
+		elsif @x1 <= 0      #keeps player within the x-axis boundaries
+			@x1 = 0
 		end
 
-		if @y >= @window.height-@player.width && @y_vel > 0 #checks if you're on the ground and speeding downwards
+		#remove this once done with collision_handler.rb
+		if @y1 >= @window.height-@player.width && @y_vel > 0 #checks if you're on the ground and speeding downwards
             @y_vel = 0
-			@y = @window.height-@player.width
+			@y1 = @window.height-@player.width
 		end
-
 	end
 
 	# b ? x : y
 	# if b then x else y
 	
 	def draw
-		@player.draw(@flipped < 0 ? @x + @player.width : @x, @y, 0, @flipped, 1.0)
+		@player.draw(@flipped < 0 ? @x2 : @x1, @y1, 0, @flipped, 1.0)
 	end
 end

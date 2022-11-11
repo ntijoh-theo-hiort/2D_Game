@@ -1,7 +1,7 @@
-require_relative ("./entity.rb")
+require_relative ("./solid.rb")
 
-class Platform < Entity
-    def initialize(x, y, width, height, window, collides_with)
+class Platform < Solid
+    def initialize
         super
     end    
 end
