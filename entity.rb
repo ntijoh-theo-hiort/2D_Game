@@ -2,13 +2,13 @@ class Entity
     attr_reader :x1, :x2, :y1, :y2, :width, :height
 
     def initialize(x, y, width, height, window)
-        @window = window
         @x1 = x
         @x2 = x + width
         @y1 = y
         @y2 = y + height
         @width = width
         @height = height
+        @window = window
     end
 end
 

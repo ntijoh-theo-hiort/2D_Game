@@ -13,27 +13,58 @@ class Player < Entity
 		@y_vel = 0
 
 		@player_speed = 6
-		@max_speed = 16
+		@max_speed = 18
 		@friction = 2
 
 		@jump_height = 22
 		@gravity = 2
 
 		@dead = false
+		@on_platform = false
 	end
 
 	attr_reader :dead
+	attr_reader :x_vel
+	attr_reader :y_vel
 
 	def collide_with(entity, direction)
 		if entity.class == Enemy
 			@dead = true
 		end
 
+		if entity.class == Platform
+			if direction == "below"
+				@on_platform = false
+				@y1 = entity.y2
+				@y_vel = 0 
+			elsif direction == "above"
+				@on_platform = true
+				@y1 = entity.y1 - @width
+				if @y_vel > 0 
+					@y_vel = 0
+				end
+			elsif direction == "left"
+				@on_platform = false
+				@x2 = entity.x1
+				x_vel = 0
+			elsif direction == "right"
+				@on_platform = false
+				@x1 = entity.x2
+				@x_vel = 0 
+			end
+		end
 
+		if entity.class == Platform && direction == ""
+			puts "something went wrong with platform direction"
+		end
+
+		if entity.class == Enemy && direction != ""
+			puts "something went wrong with enemy direction"
+		end
 	end
 
 	def jump
-		if @y1 == @window.height - @player.width
+		if @on_platform
 			@y_vel -= @jump_height
 		end
 	end
@@ -85,6 +116,8 @@ class Player < Entity
 			@y_vel += @gravity         #gravity, basically... if the player is in the air, pull them down
 		end
 
+		@on_platform = false
+
         if @x_vel == 0
             @player = @animation[0]
         end
@@ -98,11 +131,11 @@ class Player < Entity
 			@x1 = 0
 		end
 
-		#remove this once done with collision_handler.rb
-		if @y1 >= @window.height-@player.width && @y_vel > 0 #checks if you're on the ground and speeding downwards
-            @y_vel = 0
-			@y1 = @window.height-@player.width
-		end
+		@x2 = @x1 + @width
+		@y2 = @y1 + @height
+
+		# puts @y_vel
+		# puts @on_platform
 	end
 
 	# b ? x : y

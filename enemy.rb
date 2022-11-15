@@ -5,15 +5,15 @@ class Enemy < Entity
         super
         @enemy = Gosu::Image.new("./images/enemy.png")
         @x_vel = 3
+        @y_vel = 0
         @flipped = 1
+        @gravity = 2
     end
 
+    attr_reader :y_vel
+    attr_reader :x_vel
+
     def collide_with(entity, direction)
-		if entity.class == Platform
-            @falling = false
-        else
-            @falling = true
-        end
 		# end
 	end
 
@@ -27,8 +27,15 @@ class Enemy < Entity
             @x_vel *= -1
             @flipped *= -1
         end
+
+        if !@on_platform
+			@y_vel += @gravity         #gravity, basically... if the player is in the air, pull them down
+		end
         
         @x1 += @x_vel
+		@x2 = @x1 + @enemy.width
+		@y1 += @y_vel
+		@y2 = @y1 + @enemy.height
     end
 
     def draw
